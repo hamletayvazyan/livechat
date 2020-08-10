@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import {AuthService} from "../../_services/auth.service";
+
 export default {
     name: "LoginComponent",
     data() {
@@ -34,6 +36,7 @@ export default {
     methods: {
         submit(){
             console.log(this.form);
+            AuthService.login(this.form).then()
         }
     }
 }

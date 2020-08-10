@@ -72,4 +72,20 @@ class RegisterController extends Controller
             'api_token' => ApiTokenController::generate($data['email']),
         ]);
     }
+
+//    /**
+//     * The user has been registered.
+//     *
+//     * @param \Illuminate\Http\Request $request
+//     * @param mixed $user
+//     * @return mixed
+//     */
+//    protected function registered(Request $request, $user)
+//    {
+//        Mail::to($user->email)->send(new VerifyEmail($user));
+//        return response()->json([
+//            'success' => true,
+//            'message' => 'user created please verify email'
+//        ], 200);
+//    }
 }

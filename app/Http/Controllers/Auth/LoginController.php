@@ -42,26 +42,52 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
     /**
-     * Handle an authentication attempt.
+     * The user has been authenticated.
      *
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $user
+     * @return mixed
      */
-    public function authenticate(Request $request)
+    protected function authenticated(Request $request, $user)
     {
-        $credentials = $request->only('email', 'password');
+//        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'success' => true,
+                'user_info'=>auth()->user(),
+                'token'=> ApiTokenController::getApiToken($request)
+            ], 200);
+//        }
+//        return response()->json('invalid credentials', 404);
+    }
 
-        if (Auth::attempt($credentials)) {
-            $token = ApiTokenController::generateAndFill($request);
-            return response()->json([
-                auth()->user(),
-                $token
-            ]);
-        } else {
-            return response()->json([
-                'message' => 'invalid credentials'
-            ]);
+    /**
+     * Send the response after the user was authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+//        $request->session()->regenerate();
+
+        $this->clearLoginAttempts($request);
+
+        if ($response = $this->authenticated($request, $this->guard()->user())) {
+            return $response;
         }
+
+        return $request->wantsJson()
+            ? new Response('', 204)
+            : redirect()->intended($this->redirectPath());
+    }
+
+    public function logout(Request $request)
+    {
+        ApiTokenController::remove($request);
+        auth()->logout();
+        $this->guard()->logout();
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

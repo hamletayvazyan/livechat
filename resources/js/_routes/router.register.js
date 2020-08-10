@@ -18,7 +18,7 @@ const allRoutes = [
 ];
 
 AuthRoutes.map((i) => {
-    allRoutes.push(i)
+    allRoutes[0].children.push(i)
 });
 // TasksRoutes.map((i) => {
 //     routes[0].children.push(i)
