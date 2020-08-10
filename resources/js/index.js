@@ -20,19 +20,47 @@ const router = new VueRouter({
     linkExactActiveClass: 'active',
     mode: 'history'
 })
+router.beforeEach((to, from, next) => {
+    store.commit('checkFortToken');
+    let routeNames = [
+        'login',
+        'register',
+        'app',
+    ];
+    if (store.state.isLoggedIn) {
+        if (to.name === 'login' || to.name === 'register') next({name: 'tasks'})
+        next()
+    } else {
+        const checkRoute = routeNames.filter(i => i === to.name);
+        if (checkRoute.length === 0) next({name: 'app'});
+        next()
+    }
+});
 
 const store = new Vuex.Store({
     state: {
-        count: 0
+        isLoggedIn: false,
+        userDetails: {},
+        loading: false,
     },
     mutations: {
-        increment (state) {
-            state.count++
-        }
+        checkAuth (state) {
+            const token = localStorage.getItem('token');
+            state.isLoggedIn = !!token;
+        },
+        userDetails (state) {
+            const user = localStorage.getItem('user');
+            state.userDetails = JSON.parse(user);
+        },
+        loading (state, canLoad) {
+            state.loading = canLoad;
+        },
     }
 })
 
 
 new Vue({
-    router
+    router,
+    store,
+    el: '#app'
 }).$mount('#app')

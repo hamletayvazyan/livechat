@@ -36,7 +36,7 @@ export default {
     methods: {
         submit(){
             console.log(this.form);
-            AuthService.login(this.form).then()
+            AuthService.login(this.form, this.$store).then()
         }
     }
 }
