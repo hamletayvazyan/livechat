@@ -9,6 +9,7 @@ use App\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -69,23 +70,20 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'api_token' => ApiTokenController::generate($data['email']),
         ]);
     }
 
-//    /**
-//     * The user has been registered.
-//     *
-//     * @param \Illuminate\Http\Request $request
-//     * @param mixed $user
-//     * @return mixed
-//     */
-//    protected function registered(Request $request, $user)
-//    {
-//        Mail::to($user->email)->send(new VerifyEmail($user));
-//        return response()->json([
-//            'success' => true,
-//            'message' => 'user created please verify email'
-//        ], 200);
-//    }
+    /**
+     * The user has been registered.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed $user
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
 }

@@ -8,7 +8,7 @@ export const ProfileRoutes = [
         name: 'users'
     },
     {
-        path: 'chat',
+        path: 'chat/:id',
         component: ChatComponent,
         name: 'chat'
     }

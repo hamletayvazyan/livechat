@@ -49,7 +49,6 @@ export default {
     },
     methods: {
         submit(){
-            console.log(this.form);
             AuthService.register(this.form, this.$store).then(() => {
                 this.$router.replace('/login')
             })

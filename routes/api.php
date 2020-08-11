@@ -30,7 +30,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    Route::get('/users', function () {
-        return \App\User::all();
-    });
+    Route::get('/users', 'HomeController@users');
+    Route::post('/chat', 'ChatController@index');
+    Route::post('/send', 'ChatController@store');
 });

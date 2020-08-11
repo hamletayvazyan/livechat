@@ -37,7 +37,7 @@ export default {
         submit(){
             console.log(this.form);
             AuthService.login(this.form, this.$store).then(() => {
-                this.$router.replace('/')
+                this.$router.replace('/users')
             })
         }
     }

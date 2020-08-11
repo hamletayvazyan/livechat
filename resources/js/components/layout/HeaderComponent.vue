@@ -42,8 +42,9 @@ export default {
     name: "HeaderComponent",
     methods: {
         logout() {
-            AuthService.logOut(this.$store);
-            this.$router.replace('/login')
+            AuthService.logOut(this.$store).then(() => {
+                this.$router.replace('/login')
+            });
         }
     }
 }

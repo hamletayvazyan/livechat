@@ -4,7 +4,6 @@ import {api_point} from "../environments"
 export const AuthService = {
     login: function (formData, $store){
         return axios.post(`${api_point}/login`, formData).then(resp => {
-            console.log(resp);
             this.fillStorageValuesAndAuthVariable(resp.data, $store);
             this.updateAuthorizationBearerToken(`Bearer ${resp.data.token}`);
             return resp.data;
@@ -12,16 +11,16 @@ export const AuthService = {
     },
     register: function (formData, $store){
         return axios.post(`${api_point}/register`, formData).then(resp => {
-            this.fillStorageValuesAndAuthVariable(resp.data, $store);
-            this.updateAuthorizationBearerToken(`Bearer ${resp.data.token}`);
+            // this.fillStorageValuesAndAuthVariable(resp.data, $store);
+            // this.updateAuthorizationBearerToken(`Bearer ${resp.data.token}`);
             return resp.data;
         })
     },
     logOut($store) {
-        this.clearStorageAndResetAuthVariable($store);
         return axios.post(`${api_point}/logoutApi`)
             .then((resp) => {
                 this.updateAuthorizationBearerToken(null);
+                this.clearStorageAndResetAuthVariable($store);
                 return resp.data
             })
             .catch()

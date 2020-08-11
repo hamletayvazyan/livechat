@@ -82,18 +82,11 @@ class LoginController extends Controller
             : redirect()->intended($this->redirectPath());
     }
 
-    public function logout(Request $request)
-    {
-        auth()->logout();
-    }
     public function logoutApi(Request $request)
     {
         ApiTokenController::remove($request);
-        $this->logout($request);
         return response()->json([
-            'success' => true,
-            $request->user(),
-            Auth::check()
+            'success' => true
         ]);
     }
 }
