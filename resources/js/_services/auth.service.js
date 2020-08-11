@@ -19,9 +19,9 @@ export const AuthService = {
     },
     logOut($store) {
         this.clearStorageAndResetAuthVariable($store);
-        this.updateAuthorizationBearerToken(null);
-        return axios.post(`${api_point}/logout`, 'logOut')
+        return axios.post(`${api_point}/logoutApi`)
             .then((resp) => {
+                this.updateAuthorizationBearerToken(null);
                 return resp.data
             })
             .catch()
@@ -29,7 +29,7 @@ export const AuthService = {
     },
     fillStorageValuesAndAuthVariable(data,$store) {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('user', JSON.stringify(data.user_info));
         $store.commit('checkAuth');
         $store.commit('userDetails');
     },

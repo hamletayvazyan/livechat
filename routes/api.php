@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,10 +20,17 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Auth::routes();
+Auth::routes(['logout'=> false]);
 
-Route::group(['namespace' => 'Api', 'middleware' => 'auth:api'], function() {
+Route::group(['middleware' => 'auth:api'], function() {
+    Route::post('/logoutApi', 'Auth\LoginController@logoutApi');
+    Route::post('/logout', function (){
+        return redirect('/logoutApi');
+    });
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+    Route::get('/users', function () {
+        return \App\User::all();
     });
 });

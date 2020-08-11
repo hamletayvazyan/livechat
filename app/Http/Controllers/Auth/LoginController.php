@@ -39,7 +39,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest')->except(['logout', 'logoutApi']);
     }
     /**
      * The user has been authenticated.
@@ -51,10 +51,11 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
 //        if ($user->hasVerifiedEmail()) {
+        ApiTokenController::generateAndFill($request);
             return response()->json([
                 'success' => true,
                 'user_info'=>auth()->user(),
-                'token'=> ApiTokenController::getApiToken($request)
+                'token'=> ApiTokenController::generateAndFill($request)
             ], 200);
 //        }
 //        return response()->json('invalid credentials', 404);
@@ -83,11 +84,16 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        ApiTokenController::remove($request);
         auth()->logout();
-        $this->guard()->logout();
+    }
+    public function logoutApi(Request $request)
+    {
+        ApiTokenController::remove($request);
+        $this->logout($request);
         return response()->json([
             'success' => true,
+            $request->user(),
+            Auth::check()
         ]);
     }
 }

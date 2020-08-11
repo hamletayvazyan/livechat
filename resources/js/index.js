@@ -1,4 +1,4 @@
-/*
+/**
 * default imports
 * */
 import Vue from 'vue'
@@ -9,7 +9,7 @@ import 'es6-promise/auto'
 Vue.use(VueRouter)
 Vue.use(Vuex)
 
-/*
+/**
 *   router register
 * */
 import allRoutes from "./_routes/router.register";
@@ -21,19 +21,17 @@ const router = new VueRouter({
     mode: 'history'
 })
 router.beforeEach((to, from, next) => {
-    store.commit('checkFortToken');
+    store.commit('checkAuth');
     let routeNames = [
         'login',
         'register',
         'app',
     ];
     if (store.state.isLoggedIn) {
-        if (to.name === 'login' || to.name === 'register') next({name: 'tasks'})
-        next()
+        (to.name === 'login' || to.name === 'register') ? next({name: 'users'}) : next();
     } else {
         const checkRoute = routeNames.filter(i => i === to.name);
-        if (checkRoute.length === 0) next({name: 'app'});
-        next()
+        (checkRoute.length === 0) ? next({name: 'login'}) : next();
     }
 });
 

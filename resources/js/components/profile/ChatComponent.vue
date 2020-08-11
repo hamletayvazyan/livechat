@@ -1,5 +1,7 @@
 <template>
-
+    <div>
+        chat works
+    </div>
 </template>
 
 <script>
