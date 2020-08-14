@@ -31,6 +31,6 @@ Route::group(['middleware' => 'auth:api'], function() {
         return $request->user();
     });
     Route::get('/users', 'HomeController@users');
-    Route::post('/chat', 'ChatController@index');
-    Route::post('/send', 'ChatController@store');
+    Route::post('/chat', 'MessageController@index');
+    Route::post('/send', 'MessageController@store');
 });

@@ -42,16 +42,33 @@ export default {
     },
     mounted() {
         this.$store.commit('userDetails');
-        this.form.sender_id = this.$store.state.userDetails.id;
-        this.form.receiver_id = this.$route.params.id;
-        ChatService.getChat({
-            sender_id: this.$route.params.id
-        }).then(resp => {
-            console.log(resp);
-            this.messages = resp;
-        })
+        this.form.sender_id = +this.$store.state.userDetails.id;
+        this.form.receiver_id = +this.$route.params.id;
+
+        if (this.form.receiver_id !== this.form.sender_id) {
+            console.log('entered', this.form.receiver_id, this.form.sender_id);
+            window.Echo.channel(`newMessage-${this.form.receiver_id}-${this.form.sender_id}`)
+                .listen('MessageSent', (data) => {
+                    console.log('channel listening: ',data);
+                    if (this.form.sender_id) {
+                        this.messages.push(data.message)
+                    }
+                })
+            this.loadMessages()
+        }
     },
     methods: {
+        loadMessages() {
+            this.$store.commit('userDetails');
+            this.form.sender_id = +this.$store.state.userDetails.id;
+            this.form.receiver_id = +this.$route.params.id;
+            ChatService.getChat({
+                sender_id: this.$route.params.id
+            }).then(resp => {
+                console.log(resp);
+                this.messages = resp;
+            })
+        },
         submit() {
             console.log(this.form);
             ChatService.sendMessage(this.form).then(resp => {
