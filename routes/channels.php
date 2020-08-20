@@ -35,6 +35,14 @@ use Illuminate\Support\Facades\Broadcast;
 //    ];
 //});
 
-Broadcast::channel('newMessage-{receiver_id}-{sender_id}', function ($user, $receiver_id, $sender_id) {
-    return $user;
-});
+//
+//Broadcast::channel('newMessage.{receiver_id}-{sender_id}', function ($user, $receiver_id, $sender_id) {
+//    return (int) $user->id !== null && $receiver_id == $sender_id;
+//});
+//Broadcast::channel('chat', function ($user) {
+//    return (int) $user->id !== null;
+//});
+//
+//Broadcast::channel('chat.{room_id}', function ($user, $room_id) {
+//    return (int) $user->id !== null;
+//});

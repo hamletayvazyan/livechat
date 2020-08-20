@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Chat;
+use App\Events\ChatSender;
 use App\Events\MessageSent;
+use App\Room;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -44,8 +46,7 @@ class MessageController extends Controller
             'status'     => $request->input('status'),
         ]);
 
-        broadcast(new MessageSent($message))->toOthers();
-
+        event(new MessageSent($message));
         return $message->fresh();
     }
 
@@ -81,5 +82,16 @@ class MessageController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Create the specified room.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function room(Request $request)
+    {
+        return Room::create($request->all());
     }
 }

@@ -40,24 +40,27 @@ export default {
             messages: []
         }
     },
-    mounted() {
+    beforeMount() {
         this.$store.commit('userDetails');
         this.form.sender_id = +this.$store.state.userDetails.id;
         this.form.receiver_id = +this.$route.params.id;
-
+        console.log(window.Echo.connector);
+        this.loadMessages()
+    },
+    mounted() {
         if (this.form.receiver_id !== this.form.sender_id) {
             console.log('entered', this.form.receiver_id, this.form.sender_id);
-            window.Echo.channel(`newMessage-${this.form.receiver_id}-${this.form.sender_id}`)
-                .listen('MessageSent', (data) => {
-                    console.log('channel listening: ',data);
-                    if (this.form.sender_id) {
-                        this.messages.push(data.message)
-                    }
-                })
-            this.loadMessages()
+            this.listener(this.form.receiver_id, this.form.sender_id);
         }
     },
     methods: {
+        listener() {
+            window.Echo.channel(`chat`)
+                .listen("MessageSent", (data) => {
+                    console.log('qwertyuio: ', data);
+                    this.messages.push(data.message)
+                })
+        },
         loadMessages() {
             this.$store.commit('userDetails');
             this.form.sender_id = +this.$store.state.userDetails.id;

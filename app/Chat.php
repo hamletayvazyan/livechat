@@ -7,19 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Chat extends Model
 {
     protected $fillable = [
+        'room_id',
         'sender_id',
         'receiver_id',
         'message',
     ];
     protected $with = ['sender', 'receiver'];
-    public function scopeBySender($q, $sender)
+    public function scopeBySender($query, $sender)
     {
-        $q->where('sender_id', $sender);
+        $query->where('sender_id', $sender);
     }
 
-    public function scopeByReceiver($q, $sender)
+    public function scopeByReceiver($query, $sender)
     {
-        $q->where('receiver_id', $sender);
+        $query->where('receiver_id', $sender);
     }
 
     public function sender()
@@ -30,5 +31,9 @@ class Chat extends Model
     public function receiver()
     {
         return $this->belongsTo(User::class, 'receiver_id')->select(['id', 'name']);
+    }
+
+    public function room() {
+        return $this->belongsTo(Room::class, 'room_id');
     }
 }

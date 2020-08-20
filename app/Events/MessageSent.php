@@ -5,6 +5,7 @@ namespace App\Events;
 use App\Chat;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -14,21 +15,21 @@ use Illuminate\Queue\SerializesModels;
 
 class MessageSent implements ShouldBroadcastNow
 {
-    use InteractsWithSockets, SerializesModels;
+    use Dispatchable,InteractsWithSockets, Queueable, SerializesModels;
 
     /**
-     * @var Chat $chat
+     * @var Chat $message
      */
-    public $chat;
+    public $message;
 
     /**
      * Create a new event instance.
      *
-     * @param Chat $chat
+     * @param Chat $message
      */
-    public function __construct(Chat $chat)
+    public function __construct(Chat $message)
     {
-        $this->chat = $chat;
+        $this->message = $message;
     }
 
     /**
@@ -38,6 +39,6 @@ class MessageSent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-            return new Channel('newMessage-' . $this->chat->receiver_id . '-' . $this->chat->sender_id);
+        return new Channel('chat');
     }
 }

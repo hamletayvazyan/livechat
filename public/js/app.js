@@ -2287,27 +2287,33 @@ __webpack_require__.r(__webpack_exports__);
       messages: []
     };
   },
-  mounted: function mounted() {
+  beforeMount: function beforeMount() {
     this.$store.commit('userDetails');
     this.form.sender_id = +this.$store.state.userDetails.id;
     this.form.receiver_id = +this.$route.params.id;
-
+    console.log(window.Echo.connector);
+    this.loadMessages();
+  },
+  mounted: function mounted() {
     if (this.form.receiver_id !== this.form.sender_id) {
-      console.log('entered', this.form.receiver_id, this.form.sender_id); // window.Echo
-      //     .channel('newMessage-' + this.form.receiver_id + '-' + this.form.sender_id)
-      //     .listen('MessageSent', (data) => {
-      //         console.log('channel listening: ',data);
-      //         if (this.form.sender_id) {
-      //             this.messages.push(data.message)
-      //         }
-      //     })
-
-      this.loadMessages();
+      console.log('entered', this.form.receiver_id, this.form.sender_id);
+      this.listener(this.form.receiver_id, this.form.sender_id);
     }
   },
   methods: {
-    loadMessages: function loadMessages() {
+    listener: function listener(receiver, sender) {
       var _this = this;
+
+      window.Echo.channel("chat").listen("MessageSent", function (data) {
+        console.log('qwertyuio: ', data); // if (this.form.sender_id) {
+
+        _this.messages.push(data.message); // }
+        //io.emit(`newMessage.${this.form.receiver_id}-${this.form.sender_id}`, data.message);
+
+      });
+    },
+    loadMessages: function loadMessages() {
+      var _this2 = this;
 
       this.$store.commit('userDetails');
       this.form.sender_id = +this.$store.state.userDetails.id;
@@ -2316,19 +2322,19 @@ __webpack_require__.r(__webpack_exports__);
         sender_id: this.$route.params.id
       }).then(function (resp) {
         console.log(resp);
-        _this.messages = resp;
+        _this2.messages = resp;
       });
     },
     submit: function submit() {
-      var _this2 = this;
+      var _this3 = this;
 
       console.log(this.form);
       _services_chat_service__WEBPACK_IMPORTED_MODULE_0__["ChatService"].sendMessage(this.form).then(function (resp) {
         console.log(resp);
 
-        _this2.messages.push(resp);
+        _this3.messages.push(resp);
 
-        _this2.form.message = '';
+        _this3.form.message = '';
       });
     }
   }
@@ -53789,6 +53795,7 @@ __webpack_require__(/*! ./index */ "./resources/js/index.js");
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var laravel_echo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! laravel-echo */ "./node_modules/laravel-echo/dist/echo.js");
 window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+window.io = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js");
 
 try {
   window.Popper = __webpack_require__(/*! popper.js */ "./node_modules/popper.js/dist/esm/popper.js")["default"];
@@ -53796,38 +53803,27 @@ try {
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.async = true; // const personal_token = localStorage.getItem('token');
-// if (personal_token){
-//     window.axios.defaults.headers.common['Authorization'] =`Bearer ${personal_token}`;
-// }
+window.axios.async = true;
+var personal_token = localStorage.getItem('token');
+
+if (personal_token) {
+  window.axios.defaults.headers.common['Authorization'] = "Bearer ".concat(personal_token);
+}
 
  // window.Pusher = require('pusher-js');
+// console.log(document.getElementsByName('csrf-token')[0].attributes.content.value);
 
-window.io = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'socket.io',
-  host: window.location.hostname + ':6001' // key: process.env.MIX_PUSHER_APP_KEY,
+  host: window.location.hostname + ':6001',
+  // key: process.env.MIX_PUSHER_APP_KEY,
   // cluster: process.env.MIX_PUSHER_APP_CLUSTER,
   // forceTLS: true
+  csrfToken: document.getElementsByName('csrf-token')[0].attributes.content.value // https://www.learn2torials.com/a/setup-socket-io-with-laravel             using node js! no echo
+  // https://laracasts.com/discuss/channels/javascript/laravel-echo-listening-is-not-receiving-data
+  // https://laracasts.com/discuss/channels/laravel/laravel-echo-redis-socketio-echo-doesnt-catch-the-event
   // https://www.freecodecamp.org/news/how-to-use-laravel-with-socket-io-e7c7565cc19d/
   // https://webmobtuts.com/backend-development/demonstrating-laravel-echo-socket-io-and-redis-with-real-world-example/
-  // listenForBroadcast(survey_id) {
-  //     Echo.join('survey.' + survey_id)
-  //         .here((users) => {
-  //             this.users_viewing = users;
-  //             this.$forceUpdate();
-  //         })
-  //         .joining((user) => {
-  //             if (this.checkIfUserAlreadyViewingSurvey(user)) {
-  //                 this.users_viewing.push(user);
-  //                 this.$forceUpdate();
-  //             }
-  //         })
-  //         .leaving((user) => {
-  //             this.removeViewingUser(user);
-  //             this.$forceUpdate();
-  //         });
-  // },
 
 });
 
