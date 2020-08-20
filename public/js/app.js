@@ -2307,9 +2307,7 @@ __webpack_require__.r(__webpack_exports__);
       window.Echo.channel("chat").listen("MessageSent", function (data) {
         console.log('qwertyuio: ', data); // if (this.form.sender_id) {
 
-        _this.messages.push(data.message); // }
-        //io.emit(`newMessage.${this.form.receiver_id}-${this.form.sender_id}`, data.message);
-
+        _this.messages.push(data.message);
       });
     },
     loadMessages: function loadMessages() {
@@ -2330,10 +2328,6 @@ __webpack_require__.r(__webpack_exports__);
 
       console.log(this.form);
       _services_chat_service__WEBPACK_IMPORTED_MODULE_0__["ChatService"].sendMessage(this.form).then(function (resp) {
-        console.log(resp);
-
-        _this3.messages.push(resp);
-
         _this3.form.message = '';
       });
     }

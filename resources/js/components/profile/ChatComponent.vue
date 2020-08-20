@@ -54,10 +54,11 @@ export default {
         }
     },
     methods: {
-        listener() {
+        listener(receiver, sender) {
             window.Echo.channel(`chat`)
                 .listen("MessageSent", (data) => {
                     console.log('qwertyuio: ', data);
+                    // if (this.form.sender_id) {
                     this.messages.push(data.message)
                 })
         },
@@ -75,8 +76,6 @@ export default {
         submit() {
             console.log(this.form);
             ChatService.sendMessage(this.form).then(resp => {
-                console.log(resp);
-                this.messages.push(resp)
                 this.form.message = '';
             })
         },
