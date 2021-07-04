@@ -34,4 +34,20 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('/createRoom', 'MessageController@room');
     Route::post('/chat', 'MessageController@index');
     Route::post('/send', 'MessageController@store');
+
+
+
+	Route::prefix('chats')->group(function () {
+		Route::get('/', 'ChatNewController@index');
+		Route::get('{chat}/messages', 'MessageNewController@getChatMessages');
+		Route::post('{chat}/messages', 'MessageNewController@storeChatMessage');
+	});
+	Route::prefix('messages')->group(function () {
+		Route::post('mark-read', 'MessageNewController@markReadMessage');
+		Route::get('/', 'MessageNewController@getMessages');
+
+		/*Route::prefix('{message:id}')->group(function() {
+			Route::get('file', 'MessagesController@getFile')->middleware('isChatMember')->name('api.client.message.file');
+		});*/
+	});
 });

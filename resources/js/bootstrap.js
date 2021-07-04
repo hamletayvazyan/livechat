@@ -32,4 +32,6 @@ window.Echo = new Echo({
 
     // https://webmobtuts.com/backend-development/demonstrating-laravel-echo-socket-io-and-redis-with-real-world-example/
 
+    // https://mrkaluzny.com/blog/using-laravel-echo-with-socket-io-and-vue-spa/
+    // https://stackoverflow.com/questions/65437604/laravel-echo-server-redis-socket-io-cant-seem-to-make-them-work
 });

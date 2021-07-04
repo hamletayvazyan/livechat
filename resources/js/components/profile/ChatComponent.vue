@@ -6,13 +6,13 @@
                     <div class="col-8">
                         <ul class="list-group">
                             <li class="list-group-item" v-for="message in messages">
-                                {{ message.message }}
+                                {{ message.text }}
                             </li>
                         </ul>
                     </div>
                     <div class="col-4">
                         <form @submit.prevent="submit()">
-                            <textarea v-model="form.message" id="" cols="30" rows="10"></textarea>
+                            <textarea v-model="form.text" id="" cols="30" rows="10"></textarea>
                             <button type="submit" class="btn btn-outline-success">
                                 send
                             </button>
@@ -32,10 +32,12 @@ export default {
     name: "ChatComponent",
     data() {
         return {
+            chat_id: null,
             form: {
                 sender_id: null,
                 receiver_id: null,
                 message: null,
+                text: null,
             },
             messages: []
         }
@@ -44,39 +46,48 @@ export default {
         this.$store.commit('userDetails');
         this.form.sender_id = +this.$store.state.userDetails.id;
         this.form.receiver_id = +this.$route.params.id;
+        this.chat_id = +this.$route.params.id;
         console.log(window.Echo.connector);
-        this.loadMessages()
+        this.loadMessages(this.chat_id)
     },
     mounted() {
         if (this.form.receiver_id !== this.form.sender_id) {
-            console.log('entered', this.form.receiver_id, this.form.sender_id);
-            this.listener(this.form.receiver_id, this.form.sender_id);
+            // console.log('entered', this.form.receiver_id, this.form.sender_id);
+            // this.listener(this.form.receiver_id, this.form.sender_id);
+        }
+        if (this.chat_id) {
+            this.listener(this.chat_id, this.form.sender_id);
         }
     },
     methods: {
-        listener(receiver, sender) {
-            window.Echo.channel(`chat`)
-                .listen("MessageSent", (data) => {
+        listener(chat, sender) {
+            window.Echo.channel(`chat.${chat}`)
+                .listen("ChatMessageCreated", function(data) {
                     console.log('qwertyuio: ', data);
                     // if (this.form.sender_id) {
                     this.messages.push(data.message)
                 })
         },
-        loadMessages() {
+        loadMessages(chat_id) {
             this.$store.commit('userDetails');
             this.form.sender_id = +this.$store.state.userDetails.id;
             this.form.receiver_id = +this.$route.params.id;
-            ChatService.getChat({
-                sender_id: this.$route.params.id
-            }).then(resp => {
+            /*ChatService.getChatNew().then(resp => {
                 console.log(resp);
-                this.messages = resp;
+            })*/
+            ChatService.getMessages(chat_id).then(resp => {
+                console.log(resp);
+                this.messages = resp.data;
             })
         },
         submit() {
             console.log(this.form);
-            ChatService.sendMessage(this.form).then(resp => {
+           /* ChatService.sendMessage(this.form).then(resp => {
                 this.form.message = '';
+            })*/
+            ChatService.sendMessageNew(this.form.text, this.chat_id).then(resp => {
+                console.log(resp);
+                this.form.text = '';
             })
         },
     }

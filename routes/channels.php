@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Resources\ChatUserResource;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -24,25 +25,42 @@ use Illuminate\Support\Facades\Broadcast;
 //    ];
 //});
 
-//Broadcast::channel('newMessage-{sender_id}-{receiver_id}', function ($user, $sender_id, $receiver_id) {
-//    $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
-//    $txt = $user;
-//    fwrite($myfile, $txt);
-//    fclose($myfile);
-//    return [
-//        'sender_id' => $sender_id,
-//        'receiver_id' => $receiver_id,
-//    ];
-//});
+/*Broadcast::channel('newMessage-{sender_id}-{receiver_id}', function ($user, $sender_id, $receiver_id) {
+    $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
+    $txt = $user;
+    fwrite($myfile, $txt);
+    fclose($myfile);
+    return [
+        'sender_id' => $sender_id,
+        'receiver_id' => $receiver_id,
+    ];
+});*/
 
 //
 //Broadcast::channel('newMessage.{receiver_id}-{sender_id}', function ($user, $receiver_id, $sender_id) {
 //    return (int) $user->id !== null && $receiver_id == $sender_id;
 //});
-//Broadcast::channel('chat', function ($user) {
-//    return (int) $user->id !== null;
-//});
+/*Broadcast::channel('chat', function ($user) {
+    return (int) $user->id !== null;
+});*/
 //
 //Broadcast::channel('chat.{room_id}', function ($user, $room_id) {
 //    return (int) $user->id !== null;
 //});
+
+/**
+ * Presence channel for chats
+ */
+Broadcast::channel('chat.{chat}', function ($user, \App\ChatNew $chat) {
+	// return the user only if he or she is associated with a chat room
+	if (!auth()->check()) {
+		return null;
+	}
+
+	$users = $chat->users()->withPivot('last_visited_at')->get();
+	if (!$users->pluck('id')->contains($user->id)) {
+		return null;
+	}
+
+	return ChatUserResource::make($users->find($user->id));
+});
